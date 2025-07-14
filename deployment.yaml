@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: flask-app
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: flask-app
+  template:
+    metadata:
+      labels:
+        app: flask-app
+    spec:
+      containers:
+      - name: flask-app
+        image: theeksha2207/flask-k8s-app:v2
+        ports:
+        - containerPort: 5000
+        env:
+        - name: DB_URL
+          valueFrom:
+            configMapKeyRef:
+              name: flask-config
+              key: database_url
+        - name: SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: flask-secret
+              key: secret_key
+        resources:
+          requests:
+            cpu: 100m
+          limits:
+            cpu: 500m
